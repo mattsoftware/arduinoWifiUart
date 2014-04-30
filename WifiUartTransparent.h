@@ -29,24 +29,39 @@ using namespace std;
 #include <Arduino.h>
 #include <WifiUart.h>
 
-#define WIFIU_SOCKET_RESPONSE_OK 0
-#define WIFIU_SOCKET_RESPONSE_ERR -1
+#define WIFIU_TRANS_RESPONSE_OK 0
+#define WIFIU_TRANS_RESPONSE_ERR -1
 
-//struct WifiUartNetSSIDResponse {
-//	int code;
-//	char* ssid;
-//};
+#define WIFIU_TRANS_SERVERLENGTH 15 // This can be bumped up if needed, minimum 15
+#define WIFIU_TRANS_DEFAULT_TIMEOUT 120
 
-class WifiUartNetwork {
+#define WIFIU_TRANS_PROTO_TCP 0
+#define WIFIU_TRANS_PROTO_UDP 1
+#define WIFIU_TRANS_CS_CLIENT 0
+#define WIFIU_TRANS_CS_SERVER 1
+struct WifiUartTransDetailsResponse {
+    int code;
+    bool isClient;
+    // serverName only if isClient == true
+    char serverName[WIFIU_TRANS_SERVERLENGTH+1];
+    int port;
+    int protocol;
+    // connectionTimeout only if isClient == false
+    int connectionTimeout;
+};
+
+class WifiUartTransparent {
     public:
-        WifiUartSocket ();
-        ~WifiUartSocket ();
+        WifiUartTransparent ();
+        ~WifiUartTransparent ();
 
-//		static struct WifiUartNetModeResponse getWirelessMode (WifiUart *wifi); // WPRT
-//		static bool setWirelessMode(int mode);
+        static struct WifiUartTransDetailsResponse getConnectionDetails (WifiUart *wifi); // ATRM
+        static bool setClient(WifiUart *wifi, char *serverName, int port);
+        static bool setClient(WifiUart *wifi, char *serverName, int port, int protocol);
+        static bool setServer(WifiUart *wifi, int port);
+        static bool setServer(WifiUart *wifi, int port, int protocol, int timeout);
 
 //#define WIFIU_ATP_ATLT "ATLT" // Set or query data length of automatic framing
 //#define WIFIU_ATP_ATPT "ATPT" // Set or query period of automatic framing
-//#define WIFIU_ATP_ATRM "ATRM" // Set or query connection message of socket module creates automatically in auto-work mode
 //#define WIFIU_ATP_WARC "WARC" // Set or query automatic retry times in auto-work mode
 };

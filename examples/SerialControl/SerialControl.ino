@@ -25,18 +25,31 @@ SOFTWARE.
 #include <WifiUart.h>
 #include <WifiUartMisc.h>
 #include <WifiUartNetwork.h>
+#include <WifiUartTransparent.h>
 #include <SoftwareSerial.h>
 
-#define LED 13
+// pin for the led to show if the module is in command mode(high) or not (low)
+#define COMMAND_LED 13
+// RX pin the wifi module is connected to (rx pin goes to tx on wifi module)
 #define WIFI_RX 10
+// TX pins the wifi module is connected to (tx pin goes to rx on wifi module)
 #define WIFI_TX 11
+// The pin connected to the hardware reset pin on wifi module (optional)
 #define RESET_PIN 12
+// Used to show how an LED can be turned on or off via the transparent connection
+#define TEST_LED 6
 
 // userOne() uses these bits of information to setup the wifi card to use wpa
 // encryption, using the ssid and password below, setting up dns.
 #define SSID "YOUR_SSID_HERE"
 #define SECURITY_PASSWORD "YOUR_WPA_PASSWORD_HERE"
 
+// userTwo() and userThree() uses these bits to listen/connect to a TCP port
+#define TCP_LISTEN_PORT 7777
+#define TCP_CONNECT_PORT 7777
+#define TCP_CONNECT_SERVER "YOUR_IP_HERE"
+
+// Commands
 #define TOGGLE_INPUT '^'
 #define HELP 'h'
 #define ENTER_COMMAND 'c'
@@ -71,15 +84,30 @@ void userOne() {
   if (!WifiUartNetwork::setNetworkSettingsToDHCP(&wifi)) {
     Serial.println("Could not set dhcp");
   }
-  Serial.println("Done");
+  Serial.print("Done (Don't forget to reset the module ");
+  Serial.println("for the changes to take effect)");
 }
 
 void userTwo() {
-    // TODO: Your code here
+    // Set module to listen to a TCP port
+    // Connect to this port over TCP using telnet and send either 1 or 0
+    // characters to turn the TEST_LED on or off
+    if (!WifiUartTransparent::setServer(&wifi, TCP_LISTEN_PORT)) {
+        Serial.println("Could not set server mode");
+    }
+    Serial.print("Done (Don't forget to reset the module ");
+    Serial.println("for the changes to take effect)");
 }
 
 void userThree() {
-    // TODO: Your code here
+    // Try running the nodejs script in examples/server.js to test. You will need
+    // enter write to wifi mode (^) and then use the T (note case) character to
+    // toggle the led on the TEST_LED pin
+    if (!WifiUartTransparent::setClient(&wifi, TCP_CONNECT_SERVER, TCP_CONNECT_PORT)) {
+        Serial.println("Could not set client mode");
+    }
+    Serial.print("Done (Don't forget to reset the module ");
+    Serial.println("for the changes to take effect)");
 }
 
 
@@ -93,12 +121,12 @@ bool reportSuccess(bool success) {
   return success;
 }
 
-void updateLed () {
+void updateCommandLed () {
     if (!wifi.isInCommandMode()) {
-        digitalWrite(LED, LOW);
+        digitalWrite(COMMAND_LED, LOW);
     }
     else {
-        digitalWrite(LED, HIGH);
+        digitalWrite(COMMAND_LED, HIGH);
     }
 }
 
@@ -124,7 +152,7 @@ void help()
   Serial.print("Wifi module is currently ");
   Serial.print(wifi.isInCommandMode() ? "" : "not ");
   Serial.println("in command mode");
-  updateLed();
+  updateCommandLed();
 }
 
 void networkState() {
@@ -205,18 +233,46 @@ void webToggle() {
   reportSuccess(WifiUartMisc::setWebServiceStatus(&wifi, newState, 80));
 }
 
+void receiveChar(char c) {
+    if (!wifi.isInCommandMode()) {
+        switch (c) {
+            case '0':
+                // Turn the test led off
+                Serial.println("TURNING THE LED OFF");
+                digitalWrite(TEST_LED, LOW);
+                wifiSerial.write("OFF\n");
+                break;
+            case '1':
+                // Turn the test led on
+                Serial.println("TURNING THE LED ON");
+                digitalWrite(TEST_LED, HIGH);
+                wifiSerial.write("ON\n");
+                break;
+            default:
+                // Didn't recognise the character, just output it to the serial
+                Serial.print("GOT: ");
+                Serial.println(c);
+        }
+    }
+    else {
+        Serial.write(c);
+    }
+
+}
+
 void setup() {
   Serial.begin(115200);
   wifiSerial.begin(9600);
   help();
-  pinMode(LED, OUTPUT);
+  pinMode(COMMAND_LED, OUTPUT);
+  pinMode(TEST_LED, OUTPUT);
   wifi.setHardwareResetPin(RESET_PIN, true);
 }
 
 void loop() {
   if (wifiSerial.available()) {
     while (wifiSerial.available()) {
-      Serial.write(wifiSerial.read());
+      receiveChar(wifiSerial.read());
     }
   }
   if (Serial.available()) {
@@ -228,6 +284,9 @@ void loop() {
     }
     else if (writeToWifi) {
       wifiSerial.print(r);
+      if (r == '\r') {
+          wifiSerial.print('\n');
+      }
     }
     else {
       switch (r) {
@@ -237,27 +296,27 @@ void loop() {
         case ENTER_COMMAND:
           Serial.println("Enter Command Mode");
           reportSuccess (wifi.enterCommandMode());
-          updateLed();
+          updateCommandLed();
           break;
         case EXIT_COMMAND:
           Serial.println("Exit Command Mode");
           reportSuccess (wifi.exitCommandMode());
-          updateLed();
+          updateCommandLed();
           break;
         case FACTORY_RESET:
           Serial.println("Factory Reset");
           reportSuccess (wifi.factoryReset());
-          updateLed();
+          updateCommandLed();
           break;
         case RESET:
           Serial.println("Reset");
           reportSuccess (wifi.reset());
-          updateLed();
+          updateCommandLed();
           break;
         case HARDWARE_RESET:
           Serial.println("Hardware Reset");
           reportSuccess (wifi.hardwareReset());
-          updateLed();
+          updateCommandLed();
           break;
         case NETWORK_STATE:
           Serial.println("Network State");

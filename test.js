@@ -94,6 +94,7 @@ function runTests (dev, baud, callback) {
 
 var arduinoCommand = function (arduinoOptions, callback) {
 	var output = '';
+	var errOutput = '';
 	var boardParam = [arduinoOptions.package, arduinoOptions.architecture, arduinoOptions.board].join(':');
 	if (arduinoOptions.parameters.length > 0) {
 		boardParam = [boardParam, arduinoOptions.parameters].join(':');
@@ -108,15 +109,20 @@ var arduinoCommand = function (arduinoOptions, callback) {
 	cmd.on('error', function (err) {
 		callback(err, null);
 	});
-	cmd.stdout.on('data', function(data){
+	cmd.stdout.on('data', function(data) {
 		output += data;
+	});
+	cmd.stderr.on('data', function(data) {
+		errOutput += data;
 	});
 	cmd.on('close', function(code){
 		if (code !== 0) {
 			var error = new Error(arduinoOptions.command + ' exited with code ' + code);
 			error.code = code;
 			error.commandLine = arduinoOptions.binary + ' ' + cmdParams.join(' ');
-			callback(error, output);
+			error.output = output;
+			error.errorOutput = errOutput;
+			callback(error, null);
 		} else {
 			callback(null, output);
 		}
@@ -220,7 +226,9 @@ promise.then(function (result) {
 .fail(function(err) {
 	console.log("ERROR: " + err + " (" + err.code + ")");
 	if (err.commandLine) {
-		console.log(err.commandLine);
+		console.log(err.commandLine.trim());
+		console.log("-----");
+		console.log(err.errorOutput.trim());
+		console.log("-----");
 	}
 });
-

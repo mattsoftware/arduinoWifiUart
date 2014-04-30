@@ -233,6 +233,7 @@ void webToggle() {
   reportSuccess(WifiUartMisc::setWebServiceStatus(&wifi, newState, 80));
 }
 
+bool isTestLedOn = false;
 void receiveChar(char c) {
     if (!wifi.isInCommandMode()) {
         switch (c) {
@@ -241,17 +242,19 @@ void receiveChar(char c) {
                 Serial.println("TURNING THE LED OFF");
                 digitalWrite(TEST_LED, LOW);
                 wifiSerial.write("OFF\n");
+                isTestLedOn = false;
                 break;
             case '1':
                 // Turn the test led on
                 Serial.println("TURNING THE LED ON");
                 digitalWrite(TEST_LED, HIGH);
                 wifiSerial.write("ON\n");
+                isTestLedOn = true;
                 break;
-            default:
-                // Didn't recognise the character, just output it to the serial
-                Serial.print("GOT: ");
-                Serial.println(c);
+            case '2':
+                Serial.println("STATUS REQUESTED");
+                wifiSerial.write(isTestLedOn ? "ON\n" : "OFF\n");
+                break;
         }
     }
     else {

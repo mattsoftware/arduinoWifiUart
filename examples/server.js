@@ -38,6 +38,9 @@ var server = net.createServer(function (socket) {
 			var command = currentState ? '1' : '0';
 			process.stdout.write("\nSending command: " + command + ": ");
 			socket.write(command);
+		} else if (c === "S") {
+			process.stdout.write("\nSending command: 2: ");
+			socket.write("2");
 		} else {
 			process.stdout.write(c);
 		}

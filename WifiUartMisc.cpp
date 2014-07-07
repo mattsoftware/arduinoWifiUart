@@ -38,7 +38,7 @@ struct WifiUartMiscPasswordResponse WifiUartMisc::getSystemPassword(WifiUart *wi
 	WifiUartMiscPasswordResponse ret = { WIFIU_MISC_RESPONSE_ERR, "" };
     if (res.getCode() == WIFIU_OK) {
 		ret.code = WIFIU_MISC_RESPONSE_OK;
-        ret.password = res.getResponse();
+        strncpy(ret.password, res.getResponse(), WIFIU_MISC_PASSLENGTH);
     }
     return ret;
 }

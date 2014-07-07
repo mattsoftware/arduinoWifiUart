@@ -31,9 +31,10 @@ using namespace std;
 
 #define WIFIU_MISC_RESPONSE_OK 0
 #define WIFIU_MISC_RESPONSE_ERR -1
+#define WIFIU_MISC_PASSLENGTH 6
 struct WifiUartMiscPasswordResponse {
 	int code;
-	char* password;
+    char password[WIFIU_MISC_PASSLENGTH+1];
 };
 struct WifiUartMiscWebServiceResponse {
 	int code;

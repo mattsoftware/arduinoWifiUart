@@ -33,13 +33,13 @@ using namespace std;
 #define WIFIU_MISC_RESPONSE_ERR -1
 #define WIFIU_MISC_PASSLENGTH 6
 struct WifiUartMiscPasswordResponse {
-	int code;
+    int code;
     char password[WIFIU_MISC_PASSLENGTH+1];
 };
 struct WifiUartMiscWebServiceResponse {
-	int code;
-	bool isEnabled;
-	int port;
+    int code;
+    bool isEnabled;
+    int port;
 };
 
 class WifiUartMisc {
@@ -47,11 +47,11 @@ class WifiUartMisc {
         WifiUartMisc ();
         ~WifiUartMisc ();
 
-		static struct WifiUartMiscPasswordResponse getSystemPassword (WifiUart *wifi); // PASS
-		static bool setSystemPassword (WifiUart *wifi, char *newPass);
+        static struct WifiUartMiscPasswordResponse getSystemPassword (WifiUart *wifi); // PASS
+        static bool setSystemPassword (WifiUart *wifi, char *newPass);
 
-		static struct WifiUartMiscWebServiceResponse getWebServiceStatus (WifiUart *wifi); // WEBS
-		static bool setWebServiceStatus(WifiUart *wifi, bool status, int port);
+        static struct WifiUartMiscWebServiceResponse getWebServiceStatus (WifiUart *wifi); // WEBS
+        static bool setWebServiceStatus(WifiUart *wifi, bool status, int port);
 
  // #define WIFIU_ATP_NULL "" // Null command
  // #define WIFIU_ATP_ENTS "ENTS" // Enter sleeping mode

@@ -35,16 +35,16 @@ WifiUartMisc::~WifiUartMisc () {
 struct WifiUartMiscPasswordResponse WifiUartMisc::getSystemPassword(WifiUart *wifi) {
     WifiUartCommand cmd = WifiUartCommand(wifi, WIFIU_ATP_PASS);
     WifiUartResponse res = cmd.send();
-	WifiUartMiscPasswordResponse ret = { WIFIU_MISC_RESPONSE_ERR, "" };
+    WifiUartMiscPasswordResponse ret = { WIFIU_MISC_RESPONSE_ERR, "" };
     if (res.getCode() == WIFIU_OK) {
-		ret.code = WIFIU_MISC_RESPONSE_OK;
+        ret.code = WIFIU_MISC_RESPONSE_OK;
         strncpy(ret.password, res.getResponse(), WIFIU_MISC_PASSLENGTH);
     }
     return ret;
 }
 
 bool WifiUartMisc::setSystemPassword (WifiUart *wifi, char *newPass) {
-	// TODO: Make sure the password is exactly 6 characters long
+    // TODO: Make sure the password is exactly 6 characters long
     WifiUartCommand cmd = WifiUartCommand(wifi, WIFIU_ATP_PASS, WIFIU_OP_SYNC, newPass);
     WifiUartResponse res = cmd.send();
     return res.getCode() == WIFIU_OK;
@@ -53,25 +53,25 @@ bool WifiUartMisc::setSystemPassword (WifiUart *wifi, char *newPass) {
 struct WifiUartMiscWebServiceResponse WifiUartMisc::getWebServiceStatus (WifiUart *wifi) {
     WifiUartCommand cmd = WifiUartCommand(wifi, WIFIU_ATP_WEBS);
     WifiUartResponse res = cmd.send();
-	WifiUartMiscWebServiceResponse ret = { WIFIU_MISC_RESPONSE_ERR, false, 0 };
+    WifiUartMiscWebServiceResponse ret = { WIFIU_MISC_RESPONSE_ERR, false, 0 };
     if (res.getCode() == WIFIU_OK) {
-		ret.code = WIFIU_MISC_RESPONSE_OK;
-		char tmpString[res.getResponseLength()];
-		res.getResponseField(0, tmpString, res.getResponseLength());
-		ret.isEnabled = (atoi(tmpString) == WIFIU_ATP_WEBS_ENABLED);
-		res.getResponseField(1, tmpString, res.getResponseLength());
-		ret.port = atoi(tmpString);
-	}
+        ret.code = WIFIU_MISC_RESPONSE_OK;
+        char tmpString[res.getResponseLength()];
+        res.getResponseField(0, tmpString, res.getResponseLength());
+        ret.isEnabled = (atoi(tmpString) == WIFIU_ATP_WEBS_ENABLED);
+        res.getResponseField(1, tmpString, res.getResponseLength());
+        ret.port = atoi(tmpString);
+    }
     return ret;
 }
 
 bool WifiUartMisc::setWebServiceStatus(WifiUart *wifi, bool status, int port) {
-	char extra[1 + 1 + 12 + 1]; // 1/0, comma, integer
-	char portChar[13];
-	itoa((status) ? WIFIU_ATP_WEBS_ENABLED : WIFIU_ATP_WEBS_DISABLED, extra, 10);
-	itoa(port, portChar, 10);
-	strncat(extra, ",", 1);
-	strncat(extra, portChar, 12);
+    char extra[1 + 1 + 12 + 1]; // 1/0, comma, integer
+    char portChar[13];
+    itoa((status) ? WIFIU_ATP_WEBS_ENABLED : WIFIU_ATP_WEBS_DISABLED, extra, 10);
+    itoa(port, portChar, 10);
+    strncat(extra, ",", 1);
+    strncat(extra, portChar, 12);
     WifiUartCommand cmd = WifiUartCommand(wifi, WIFIU_ATP_WEBS, WIFIU_OP_SYNC, extra);
     WifiUartResponse res = cmd.send();
     return res.getCode() == WIFIU_OK;

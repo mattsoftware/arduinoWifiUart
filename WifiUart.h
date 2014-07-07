@@ -49,7 +49,7 @@ class WifiUart {
         bool getIsSending();
         void setIsSending();
         void clearIsSending();
-		bool setHardwareResetPin(short pin, bool init);
+        bool setHardwareResetPin(short pin, bool init);
 
         bool enterCommandMode();
         bool exitCommandMode();
@@ -57,7 +57,7 @@ class WifiUart {
 
         bool factoryReset(); // RSFT
         bool reset(); //  Z
-		bool hardwareReset();
+        bool hardwareReset();
 
 // #define WIFIU_ATP_ATM "ATM" // Set or query work mode of module
 // #define WIFIU_ATP_CMDM "CMDM" // Set or query default command mode of system
@@ -74,8 +74,8 @@ class WifiUart {
         uint16_t _commandTimeout;
         Stream *_serial;
         bool _isSending;
-		short _hardwareResetPin;
-		uint16_t _hardwareResetDelay;
+        short _hardwareResetPin;
+        uint16_t _hardwareResetDelay;
 
         void _init (Stream *serial);
         void _init (Stream *serial, bool isAlreadyInCommandMode);

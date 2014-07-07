@@ -79,15 +79,15 @@ void WifiUart::clearIsSending() {
 }
 
 bool WifiUart::setHardwareResetPin(short pin, bool init) {
-	if (_hardwareResetPin > -1) {
-		return false;
-	}
-	_hardwareResetPin = pin;
-	if (init) {
-		pinMode(_hardwareResetPin, OUTPUT);
-		digitalWrite(_hardwareResetPin, HIGH);
-	}
-	return true;
+    if (_hardwareResetPin > -1) {
+        return false;
+    }
+    _hardwareResetPin = pin;
+    if (init) {
+        pinMode(_hardwareResetPin, OUTPUT);
+        digitalWrite(_hardwareResetPin, HIGH);
+    }
+    return true;
 }
 
 bool WifiUart::enterCommandMode() {
@@ -151,15 +151,15 @@ bool WifiUart::reset() {
 }
 
 bool WifiUart::hardwareReset() {
-	if (_hardwareResetPin < 0) {
-		return false;
-	}
-	digitalWrite(_hardwareResetPin, LOW);
-	delay(_hardwareResetDelay);
-	digitalWrite(_hardwareResetPin, HIGH);
-	delay(_hardwareResetDelay);
-	_isInCommandMode = false;
-	return true;
+    if (_hardwareResetPin < 0) {
+        return false;
+    }
+    digitalWrite(_hardwareResetPin, LOW);
+    delay(_hardwareResetDelay);
+    digitalWrite(_hardwareResetPin, HIGH);
+    delay(_hardwareResetDelay);
+    _isInCommandMode = false;
+    return true;
 }
 
 void WifiUart::_init (Stream *serial) {
@@ -175,6 +175,6 @@ void WifiUart::_init (Stream *serial, bool isAlreadyInCommandMode) {
     _serial = serial;
     _isInCommandMode = isAlreadyInCommandMode;
     _isSending = false;
-	_hardwareResetPin = -1;
-	_hardwareResetDelay = 500;
+    _hardwareResetPin = -1;
+    _hardwareResetDelay = 500;
 }

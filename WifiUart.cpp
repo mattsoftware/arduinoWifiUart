@@ -157,6 +157,7 @@ bool WifiUart::hardwareReset() {
 	digitalWrite(_hardwareResetPin, LOW);
 	delay(_hardwareResetDelay);
 	digitalWrite(_hardwareResetPin, HIGH);
+	delay(_hardwareResetDelay);
 	_isInCommandMode = false;
 	return true;
 }

@@ -32,6 +32,7 @@ SOFTWARE.
 test (getConnectionDetailsServer) {
     FakeStreamBuffer stream = FakeStreamBuffer();
     WifiUart wifi = WifiUart(&stream, true);
+    // ATRM, tcp, server, timeout, port
     stream.nextBytes("+OK=0,1,42,66\r\n\r\n");
     WifiUartTransDetailsResponse response = WifiUartTransparent::getConnectionDetails(&wifi);
     assertEqual(WIFIU_TRANS_RESPONSE_OK, response.code);
@@ -45,6 +46,7 @@ test (getConnectionDetailsServer) {
 test (getConnectionDetailsClient) {
     FakeStreamBuffer stream = FakeStreamBuffer();
     WifiUart wifi = WifiUart(&stream, true);
+    // protocol, client, server name, port
     stream.nextBytes("+OK=1,0,\"192.168.1.1\",78\r\n\r\n");
     WifiUartTransDetailsResponse response = WifiUartTransparent::getConnectionDetails(&wifi);
     assertEqual(WIFIU_TRANS_RESPONSE_OK, response.code);

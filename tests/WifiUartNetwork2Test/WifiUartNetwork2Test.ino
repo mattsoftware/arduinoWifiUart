@@ -45,6 +45,7 @@ test (getConnectionStateWifiBool) {
 
 test (getNetworkSettings) {
   FakeStreamBuffer stream = FakeStreamBuffer();
+  // NIP, static ip, ip, mask, gateway, dns
   stream.nextBytes("+OK=0,\"192.168.1.1\",\"255.255.0.0\",\"192.168.1.2\",\"192.168.0.3\"\r\n\r\n");
   WifiUart wifi = WifiUart(&stream, true);
   WifiUartNetSettingsResponse response = WifiUartNetwork::getNetworkSettings(&wifi);

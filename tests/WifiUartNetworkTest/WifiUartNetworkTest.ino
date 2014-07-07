@@ -29,6 +29,7 @@ SOFTWARE.
 test (getWirelessModeInfrastructure) {
   FakeStreamBuffer stream = FakeStreamBuffer();
   WifiUart wifi = WifiUart(&stream, true);
+  // WPRT, infrastructure mode
   stream.nextBytes("+OK=0\r\n\r\n");
   WifiUartNetModeResponse response = WifiUartNetwork::getWirelessMode(&wifi);
   assertEqual(WIFIU_NET_RESPONSE_OK, response.code);
@@ -39,6 +40,7 @@ test (getWirelessModeInfrastructure) {
 test (getWirelessModeAdHoc) {
   FakeStreamBuffer stream = FakeStreamBuffer();
   WifiUart wifi = WifiUart(&stream, true);
+  // WPRT, adhoc mode
   stream.nextBytes("+OK=1\r\n\r\n");
   WifiUartNetModeResponse response = WifiUartNetwork::getWirelessMode(&wifi);
   assertEqual(WIFIU_NET_RESPONSE_OK, response.code);
@@ -66,6 +68,7 @@ test (setWirelessModeAdHoc) {
 test (getSSID) {
   FakeStreamBuffer stream = FakeStreamBuffer();
   WifiUart wifi = WifiUart(&stream, true);
+  // SSID, ssid
   stream.nextBytes("+OK=\"thirtytwocharacterspossible\"\r\n\r\n");
   WifiUartNetSSIDResponse response = WifiUartNetwork::getSSID(&wifi);
   assertEqual(WIFIU_NET_RESPONSE_OK, response.code);
@@ -84,7 +87,9 @@ test (setSSID) {
 
 test (getSecurityWifi) {
   FakeStreamBuffer stream = FakeStreamBuffer();
+  // ENCRY, wpa2
   stream.nextBytes("+OK=5\r\n\r\n");
+  // KEY, ascii, wep index, password
   stream.nextBytes("+OK=1,0,\"password\"\r\n\r\n");
   WifiUart wifi = WifiUart(&stream, true);
   WifiUartNetSecurityResponse response = WifiUartNetwork::getSecurity(&wifi);
@@ -99,6 +104,7 @@ test (getSecurityWifi) {
 test (getSecurityWifiBool){
   FakeStreamBuffer stream = FakeStreamBuffer();
   WifiUart wifi = WifiUart(&stream, true);
+  // ENCRY, aes
   stream.nextBytes("+OK=6\r\n\r\n");
   WifiUartNetSecurityResponse response = WifiUartNetwork::getSecurity(&wifi, false);
   assertEqual(WIFIU_NET_RESPONSE_OK, response.code);

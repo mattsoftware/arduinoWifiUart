@@ -29,14 +29,18 @@ var Q = require('q');
 var serialport = require('serialport');
 var childProcess = require('child_process');
 var SerialPort = serialport.SerialPort;
-var dev = process.argv[2];
-var baud = process.argv[3];
-var testFileSpec = process.argv[4];
+var board = process.argv[2];
+var dev = process.argv[3];
+var baud = process.argv[4];
+var testFileSpec = process.argv[5];
+var debug = process.argv[6] && true || false;
 
 var usage = function () {
-	process.stdout.write("Usage: tests.js <port> <baud> <test file spec>\n");
-	process.stdout.write("       Where: <test file spec> can be an ino file, an ino directory, or a directory containing ino directories\n");
-	process.exit(2);
+    process.stdout.write("Usage: tests.js <board> <port> <baud> <test file spec> [debug]\n");
+    process.stdout.write("       Where: <board> is the board type (e.g. uno, pro)\n");
+    process.stdout.write("              <test file spec> can be an ino file, an ino directory, or a directory containing ino directories\n");
+    process.stdout.write("              [debug] optional parameter to set debug mode\n");
+    process.exit(2);
 }
 if (!testFileSpec) {
 	usage();
@@ -129,8 +133,14 @@ var arduinoCommand = function (arduinoOptions, callback) {
 		'--port', arduinoOptions.port,
 		arduinoOptions.ino
 	];
+    if (debug) {
+        console.log("Running arduino command: " + arduinoOptions.binary + " " + cmdParams.join(" "));
+    }
 	var cmd = childProcess.spawn(arduinoOptions.binary, cmdParams);
 	cmd.on('error', function (err) {
+    if (debug) {
+        console.log("Arduino command failed");
+    }
 		callback(err, null);
 	});
 	cmd.stdout.on('data', function(data) {
@@ -171,7 +181,7 @@ var arduinoOptions = {
 	binary: '/Applications/Arduino.app/Contents/MacOS/JavaApplicationStub',
 	package: 'arduino',
 	architecture: 'avr',
-	board: 'uno',
+    board: board,
 	parameters: '',
 	port: dev
 };

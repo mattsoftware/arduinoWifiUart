@@ -181,7 +181,7 @@ var arduinoOptions = {
     binary: '/Applications/Arduino.app/Contents/MacOS/JavaApplicationStub',
     package: 'arduino',
     architecture: 'avr',
-board: board,
+    board: board,
     parameters: '',
     port: dev
 };

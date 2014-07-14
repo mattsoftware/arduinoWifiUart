@@ -67,8 +67,8 @@ test (initServerModified) {
 test (initMisc) {
     FakeStreamBuffer stream = FakeStreamBuffer();
     WifiUart wifi = WifiUartMock(&stream);
-    // WEBS, disabled, port
-    stream.nextBytes("+OK=0,80\r\n\r\n");
+    // WEBS, disabled (port not given when disabled)
+    stream.nextBytes("+OK=0\r\n\r\n");
     // PASS, passcode
     stream.nextBytes("+OK=\"123456\"\r\n\r\n");
     assertEqual(WIFIU_HELPER_RESPONSE_OK, WifiUartHelper::initMisc(&wifi, false, 80, "123456"));
@@ -77,26 +77,26 @@ test (initMisc) {
 test (initMiscModifiedWebService) {
     FakeStreamBuffer stream = FakeStreamBuffer();
     WifiUart wifi = WifiUartMock(&stream);
-    // WEBS, disabled, port (expect 80)
-    stream.nextBytes("+OK=0,81\r\n\r\n");
+    // WEBS, enabled, port (expect 80)
+    stream.nextBytes("+OK=1,81\r\n\r\n");
     // PASS, passcode
     stream.nextBytes("+OK=\"123456\"\r\n\r\n");
     stream.nextBytes("+OK\r\n\r\n");
     stream.nextBytes("+OK\r\n\r\n");
-    assertEqual(WIFIU_HELPER_RESPONSE_MODIFIED, WifiUartHelper::initMisc(&wifi, false, 80, "123456"));
-    assertEqual("AT+WEBS\rAT+WEBS=!0,80\rAT+PASS\rAT+PASS=!123456\r", stream.bytesWritten());
+    assertEqual(WIFIU_HELPER_RESPONSE_MODIFIED, WifiUartHelper::initMisc(&wifi, true, 80, "123456"));
+    assertEqual("AT+WEBS\rAT+WEBS=!1,80\rAT+PASS\rAT+PASS=!123456\r", stream.bytesWritten());
 }
 test (initMiscModifiedPasscode) {
     FakeStreamBuffer stream = FakeStreamBuffer();
     WifiUart wifi = WifiUartMock(&stream);
-    // WEBS, disabled, port
-    stream.nextBytes("+OK=0,81\r\n\r\n");
+    // WEBS, disabled (port not given when disabled)
+    stream.nextBytes("+OK=0\r\n\r\n");
     // PASS, passcode (expect 123456)
     stream.nextBytes("+OK=\"123457\"\r\n\r\n");
     stream.nextBytes("+OK\r\n\r\n");
     stream.nextBytes("+OK\r\n\r\n");
     assertEqual(WIFIU_HELPER_RESPONSE_MODIFIED, WifiUartHelper::initMisc(&wifi, false, 80, "123456"));
-    assertEqual("AT+WEBS\rAT+WEBS=!0,80\rAT+PASS\rAT+PASS=!123456\r", stream.bytesWritten());
+    assertEqual("AT+WEBS\rAT+PASS\rAT+PASS=!123456\r", stream.bytesWritten());
 }
 
 void setup() {

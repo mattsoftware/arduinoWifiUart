@@ -174,7 +174,7 @@ int WifiUartHelper::initMisc(WifiUart *wifi, bool enableWebService, int port, ch
         return WIFIU_HELPER_RESPONSE_ERR;
     }
     if (webResponse.isEnabled != enableWebService
-            || webResponse.port != port) {
+            || (enableWebService && webResponse.port != port)) {
         // Settings need to be changed
         if (!WifiUartMisc::setWebServiceStatus(wifi, enableWebService, port)) {
             return WIFIU_HELPER_RESPONSE_ERR;

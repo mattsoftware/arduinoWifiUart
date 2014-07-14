@@ -157,7 +157,7 @@ bool WifiUart::hardwareReset() {
     digitalWrite(_hardwareResetPin, LOW);
     delay(_hardwareResetDelay);
     digitalWrite(_hardwareResetPin, HIGH);
-    delay(_hardwareResetDelay);
+    delay(_hardwareResetPostDelay);
     _isInCommandMode = false;
     return true;
 }
@@ -177,4 +177,5 @@ void WifiUart::_init (Stream *serial, bool isAlreadyInCommandMode) {
     _isSending = false;
     _hardwareResetPin = -1;
     _hardwareResetDelay = 500;
+    _hardwareResetPostDelay = 2000;
 }

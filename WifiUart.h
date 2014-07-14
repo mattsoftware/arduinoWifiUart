@@ -76,6 +76,7 @@ class WifiUart {
         bool _isSending;
         short _hardwareResetPin;
         uint16_t _hardwareResetDelay;
+        uint16_t _hardwareResetPostDelay;
 
         void _init (Stream *serial);
         void _init (Stream *serial, bool isAlreadyInCommandMode);
